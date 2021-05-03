@@ -1,0 +1,27 @@
+Report: Apr/Date:Day
+
+Signals:
+    - was able to connect signal to signal in same class
+        _ signal_to_signal_conn.py
+    - but unable to connect signal to signal from different classes
+        _ TypeError: connect() failed between Pergamon_CM100.signal_1[] and from_pergamon()
+    -NOTE: Aghiles said don't connect signal with signal, just use intermediate slots
+
+Threading:
+    - unable to connect signals of different classes, need to emit the signal in main
+        _ ex: user1.signal_1.emit()
+        _ unable to run multiple threads simultaneously
+    Question: using intermediate slot?
+
+SerialPort:
+    - issue with the type of signals used between these classes
+        _ I think signals should be defined in the QSerialPort class
+        _ Question: what is the deciding factor of where to declare the signals (when objects of both classes will connect)
+------------------------------------------------------------------------------------------------------------------------
+Feedback:
+    - Just use signal to slot connections
+        _ Aghiles doesn't use signal to signal connection
+    - Signals should be used in the class they are stored, so i should be viewing the CM100 as my point of view
+    - Types of communications
+        _ 2 ways, from one class to another, or emitting from main, and then from one to another
+------------------------------------------------------------------------------------------------------------------------

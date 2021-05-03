@@ -1,0 +1,98 @@
+Issues/Comments:
+
+-Signal:
+    -while trying to use the port inside the QObject class
+     the signal in the QObject class is not recognized by the QSerialPort class
+    -maybe try keeping the classes separate
+    -how can i use the signal of one class, in another class?
+
+-Threads:
+    - calling method will not work, need to connect signal as a method call
+        _ ex: shown in the two object signal
+    - It is also possible to connect a signal to another signal
+    -I was able to connect a signal with another signal from the same class
+        _ but not able to connect signals from different classes
+
+-SerialPort:
+    - issue with the type of signals used between these classes
+        _ I think signals should be defined in the QSerialPort class
+    SOLUTION: can use the defined signals for QSerialPort class as well, it is a child class of QObject
+
+    - Only writing 5 characters on terminal
+
+    _ Able to write to terminal but unable to read from it
+        _ need some event to take place to emit the signal, what can i do
+    SOLUTION: need to use the readyRead signal (QSerialPort class signals)
+
+    - Not 100% clear on what the virtual machine is doing in this case
+    SOLUTION: It is a virtual machine
+                think of it as a dynamic machine that is created upon the running of the program and is destroyed (closed)
+                upon stopping the program
+            It will be equivalent to the machine (there is a better word) i will be interacting with
+- General
+    - Need to manually open the virtual terminal everytime
+    NOTE: in real life, will not be the case, because will be working with a machine already running
+
+    - Unable to write to terminal multiple times
+    NOTE: it is the way i have designed my code, try changing it
+    - The entire application is closing when i close the window
+    NOTE: this is due to a built in mechanism
+------------------------------------------------------------------------------------------------------------------------
+-Errors:
+    1.QIODevice::read (SerialPort): device not open
+        -I named the device my_port
+    -SOLUTION: when working with QSerialPort, working between two systems, therefore will use the same approach as sending
+                and receiving data between terminal and application
+
+    2.TypeError: receive_signal() missing 1 required positional argument: 'val'
+    -SOLUTION: This issue was due to the empty parameter list of pyqtSlot()
+                when connecting, need to specify what we are receiving
+                syntax: pyqtSlot(str)
+
+    3. QEventLoop: Cannot be used without QApplication
+        -this error appeared when i tried to use threading without calling on the sys.exit(app.exec()) method
+    -SOLUTION: when using threading, need to use it inside an instance of QApplication or QCoreApplication
+
+    4. QObject: Cannot create children for a parent that is in a different thread.
+(Parent is QSerialPort(0x267b4c0), parent's thread is QThread(0x2344f30), current thread is Threads(0x267d1d0)
+    - SOLUTION: override the moveToThread() method
+               whenever adding the SerialPort obj to a thread
+               add the QSerialPort object (port) to the thread as well
+
+    5. QSocketNotifier: Socket notifiers cannot be enabled or disabled from another thread
+    - NOTE: this is a message that pops up if Window not closed properly, ignore for time being
+
+    6. QObject::moveToThread: Widgets cannot be moved to a new thread
+        QSocketNotifier: Invalid socket 17 and type 'Read', disabling...
+            - these errors came when tried to move window to different thread
+------------------------------------------------------------------------------------------------------------------------
+Modifications:
+    - Work on the following
+        _ QGroupBox
+        _ QVBoxLayout/QHBoxLayout
+------------------------------------------------------------------------------------------------------------------------
+Problems:
+    - how will i display the message being sent from client on the window?
+        _ DONE :)
+------------------------------------------------------------------------------------------------------------------------
+-Tasks:
+    -Done:
+        - Able to run the program
+        - Now, working on making code cleaner
+            _ make the SerialPort class a QObject class
+            _ have a instance of QSerialPort in it
+            _ try to override the move_to_thread method to overcome the error
+        - Change the names of variables
+            _ contextualize them, so they are meaningful
+        - Work on the User Interface part
+            _ make the data (transmitted/received) print on the screen
+            _ able to write data on terminal, but unable to read back from it
+            _ solution: try to connect the reading with window as well.
+
+    - To Do:
+        - Work on using the user input from the QEditLine
+        - Work on naming variables that make sense
+            _ keep names simple
+                - within different methods, just use same parameters (i.e: data)
+
+------------------------------------------------------------------------------------------------------------------------

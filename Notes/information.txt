@@ -1,0 +1,171 @@
+-Reentrancy and Thread-Safety:
+    Throughout the documentation, the terms reentrant and thread-safe are used to mark classes and functions to indicate how
+     they can be used in multi-thread applications:
+
+    A thread-safe function can be called simultaneously from multiple threads, even when the invocations use shared data,
+    because all references to the shared data are serialized.
+
+    A reentrant function can also be called simultaneously from multiple threads, but only if each invocation uses its own data.
+    Hence, a thread-safe function is always reentrant, but a reentrant function is not always thread-safe.
+
+    By extension, a class is said to be reentrant if its member functions can be called safely from multiple threads, as long
+    as each thread uses a different instance of the class.
+    The class is thread-safe if its member functions can be called safely from multiple threads,
+    even if all the threads use the same instance of the class.
+------------------------------------------------------------------------------------------------------------------------
+QObject():                  -->https://doc.qt.io/qt-5/qobject.html
+
+Inherits: QObject is inherited by numerous classes
+    including: QIODevice
+
+-All methods are Reentrant and Thread-safe
+
+-Methods:
+    qObject_obj.moveToThread(thread_obj)
+
+-Signals:
+------------------------------------------------------------------------------------------------------------------------
+QIODevice():                -->https://doc.qt.io/qt-5/qiodevice.html
+
+- Parent Class: QObject
+
+
+-All methods are reentrant.
+
+Methods:
+Signals:
+------------------------------------------------------------------------------------------------------------------------
+QSerialPort():              --> https://doc.qt.io/qt-5/qserialport.html
+
+- Parent Class: QIODevice
+
+-All methods are reentrant
+
+-Detailed Description:
+    - set the port configurations-> portName, baudRate, byteSize, etc
+    - After setting the port, you can open it in read-only(), write-only(), read-write() mode using the open() method.
+
+    -open():
+        bool QSerialPort::open(QIODevice::OpenMode mode)
+        Reimplements: QIODevice::open(QIODevice::OpenMode mode).
+
+        -Opens the serial port using OpenMode mode, and then returns true if successful; otherwise returns false and sets an error
+        code which can be obtained by calling the error() method.
+
+    -Note: The method returns false if opening the port is successful, but could not set any of the port settings successfully.
+        In that case, the port is closed automatically not to leave the port around with incorrect settings.
+
+    -Warning: The mode has to be QIODevice::ReadOnly, QIODevice::WriteOnly, or QIODevice::ReadWrite. Other modes are unsupported.
+
+    -Note: The serial port is always opened with exclusive access
+            (that is, no other process or thread can access an already opened serial port).
+
+    -Use the close() method to close the port and cancel the I/O operations.
+
+    -Having successfully opened, QSerialPort tries to determine the current configuration of the port and initializes itself.
+        You can reconfigure the port to the desired setting using the setBaudRate(), setDataBits(), setParity(), setStopBits(),
+        and setFlowControl() methods.
+
+    -There are a couple of properties to work with the pinout signals namely: QSerialPort::dataTerminalReady, QSerialPort::requestToSend.
+        It is also possible to use the pinoutSignals() method to query the current pinout signals set.
+
+    -Once you know that the ports are ready to read or write, you can use the read() or write() methods.
+        Alternatively the readLine() and readAll() convenience methods can also be invoked. If not all the data is read at once,
+        the remaining data will be available for later as new incoming data is appended to the QSerialPort's internal read buffer.
+        You can limit the size of the read buffer using setReadBufferSize().
+
+    -QSerialPort provides a set of functions that suspend the calling thread until certain signals are emitted.
+        These functions can be used to implement blocking serial ports:
+
+        -waitForReadyRead() blocks calls until new data is available for reading.
+        -waitForBytesWritten() blocks calls until one payload of data has been written to the serial port.
+
+        -If waitForReadyRead() returns false, the connection has been closed or an error has occurred.
+        -If an error occurs at any point in time, QSerialPort will emit the errorOccurred() signal.
+            You can also call error() to find the type of error that occurred last.
+
+        -Note: Not all error conditions are handled in a platform independent way in QSerialPort, as for example the Framing,
+            Parity, and Break condition errors. These kind of errors need to be handled by the application code, probably
+            using OS system specific ioctl on the device descriptor and/or parsing the stream's byte-stuffing.
+
+        _Note: Programming with a blocking serial port is radically different from programming with a non-blocking serial port.
+                A blocking serial port does not require an event loop and typically leads to simpler code. However, in a GUI application,
+                blocking serial port should only be used in non-GUI threads, to avoid freezing the user interface.
+
+-Methods:
+
+    -read()
+        QByteArray QIODevice::read(qint64 maxSize)
+        This is an overloaded function.
+        Reads at most maxSize bytes from the device, and returns the data read as a QByteArray.
+        This function has no way of reporting errors; returning an empty QByteArray can mean either that no data was currently
+        available for reading, or that an error occurred.
+
+    -write()
+        qint64 QIODevice::write(const char *data)
+        This is an overloaded function.
+        Writes data from a zero-terminated string of 8-bit characters to the device. Returns the number of bytes that were
+        actually written, or -1 if an error occurred.
+
+    -readLine():
+        QByteArray QIODevice::readLine(qint64 maxSize = 0)
+        This is an overloaded function.
+        Reads a line from the device, but no more than maxSize characters, and returns the result as a byte array.
+        This function has no way of reporting errors; returning an empty QByteArray can mean either that no data was currently
+        available for reading, or that an error occurred.
+
+    -readAll()
+        QIODevice::readAll()
+        Reads all remaining data from the device, and returns it as a byte array.
+        This function has no way of reporting errors; returning an empty QByteArray can mean either that no data was currently
+        available for reading, or that an error occurred.
+
+-List of All Members:       --> https://doc.qt.io/qt-5/qserialport-members.html
+
+    BaudRate, DataBits, Parity, StopBits, and more...
+
+
+-Signals:
+
+    readyRead, readData, readLineData, writeData, and more...
+
+    -readyRead:  void QIODevice::readyRead()
+        - This signal is emitted once every time new data is available for reading from the device's current read channel.
+            It will only be emitted again once new data is available, such as when a new payload of network data has arrived on
+            your network socket, or when a new block of data has been appended to your device.
+
+        - readyRead() is not emitted recursively; if you reenter the event loop or call waitForReadyRead() inside a slot connected
+            to the readyRead() signal, the signal will not be remitted (although waitForReadyRead() may still return true).
+
+        - Note for developers implementing classes derived from QIODevice:
+            you should always emit readyRead() when new data has arrived (do not emit it only because there's data still to be read
+            in your buffers). Do not emit readyRead() in other conditions.
+
+        - See also bytesWritten().
+
+    - Intermediate slot:
+        _ this is the methods that we define to connect and emit signals
+
+- ByteArray and Bytes:      https://linuxhint.com/convert_bytearray_bytes_python/
+
+    -Many different types of data objects are supported by Python. Two of them are the objects bytearray and bytes.
+        The bytearray() function returns an array object of bytes. This object is changeable and supports the integer number
+        from 0 to 255. The bytes() function returns bytes objects, is not changeable, and supports the integers from 0 to 255.
+        This article will describe these functions and explain how bytearray objects can be converted into bytes objects.
+
+- Syntax of bytearray() Method
+    _ bytearray ([ data_source [, encoding [, errors]]])
+    _ The three arguments of this method are optional.
+        - The first argument is used to initialize the list of bytes.
+        - If the first argument is the string, then the second argument is used for encoding.
+        - Finally, the third argument is used to display the error if the encoding fails.
+
+- Syntax of bytes() Method
+    _ bytes ([data_source [, encoding [, errors]]])
+    _ All arguments of the bytes() function are optional, like the bytearray() method.
+    _ The functions of these arguments are also the same as the bytearray() method, mentioned above.
+------------------------------------------------------------------------------------------------------------------------
+QThread:
+
+Note: QThread doesn't have the join() method
+        it has the wait() method, which asks the other thread to wait
