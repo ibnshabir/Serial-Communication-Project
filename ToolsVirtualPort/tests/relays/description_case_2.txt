@@ -1,0 +1,19 @@
+# sensor address saved
+   {
+        "546ewfwf": 0,
+        "ewefe": 2,
+        "5612": 5,
+        "lfimc": 6,
+        "dldc": 8,
+        "fv651fd": 16
+    }
+# test case link
+	test_case_2.txt
+#expected result
+	bank		MAC		even_state	odd_state
+	1		XKKJDHD	W		W
+	2		DWSFSV		NC		W
+	3		HJHDHII	I		I
+	4		5SDFSDSD	NC		W
+	6		E556265	W		W
+	8		HJLOI		W		W

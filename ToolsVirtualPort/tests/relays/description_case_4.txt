@@ -1,0 +1,17 @@
+# sensor address saved
+	{
+        "XKKJDHD": 1,
+        "DWSFSV": 2,
+        "5SDFSDSD": 4,
+        "HJHDHII": 3
+	}
+# test case link
+	test_case_2.txt
+#expected result
+	bank		MAC		even_state	odd_state
+	1		XKKJDHD	W		W
+	2		DWSFSV		I		I
+	3		HJHDHII	I		I
+	4		5SDFSDSD	I		I
+	?		?		U		U
+	?		?		U		U
